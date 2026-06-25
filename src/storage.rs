@@ -1,6 +1,7 @@
 //! Reading and writing the vault file on disk, in JSON form.
 
 use std::fs;
+use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
 
 use anyhow::Context;
@@ -26,8 +27,10 @@ pub fn vault_path() -> anyhow::Result<PathBuf> {
 
 /// Writes the given vault state to disk as pretty-printed JSON.
 pub fn write_json(f: &File) -> anyhow::Result<()> {
+    let path = vault_path()?;
     let json = serde_json::to_string_pretty(f)?;
-    fs::write(vault_path()?, json)?;
+    fs::write(&path, json)?;
+    fs::set_permissions(&path, fs::Permissions::from_mode(0o600))?;
     Ok(())
 }
 
