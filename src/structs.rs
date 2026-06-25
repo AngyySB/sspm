@@ -10,7 +10,7 @@ pub const TIMEOUT: usize = 300;
 #[command(name = "sspm", about = "Super Simple Password Manager")]
 pub struct Cli {
     #[command(subcommand)]
-    pub service: Option<Service>,
+    pub service: Service,
 }
 
 #[derive(Debug, Subcommand, PartialEq)]

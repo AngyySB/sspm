@@ -23,8 +23,8 @@ fn main() -> anyhow::Result<()> {
         new_user()?;
     }
 
-    if args.service != Some(Service::Open)
-        && args.service != Some(Service::Close)
+    if args.service != Service::Open
+        && args.service != Service::Close
         && get_unlocked_key().is_err()
     {
         println!("Open vault before continuing");
@@ -33,18 +33,17 @@ fn main() -> anyhow::Result<()> {
 
     //check functionality user wants
     match args.service {
-        Some(Service::Show { name, all }) => handle_show(name, all),
-        Some(Service::Get { service, user }) => handle_get(&mut clipboard, service, user),
-        Some(Service::Add {
+        Service::Show { name, all } => handle_show(name, all),
+        Service::Get { service, user } => handle_get(&mut clipboard, service, user),
+        Service::Add {
             file,
             service,
             user,
             generate,
-        }) => handle_add(file, service, user, generate),
-        Some(Service::Remove { service, user, all }) => remove_password(service, user, all),
-        Some(Service::Open) => open_vault(),
-        Some(Service::Close) => close_vault(),
-        Some(Service::Purge) => purge_all(),
-        None => Ok(()),
+        } => handle_add(file, service, user, generate),
+        Service::Remove { service, user, all } => remove_password(service, user, all),
+        Service::Open => open_vault(),
+        Service::Close => close_vault(),
+        Service::Purge => purge_all(),
     }
 }
