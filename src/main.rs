@@ -40,7 +40,7 @@ fn main() -> anyhow::Result<()> {
             service,
             user,
             generate,
-        } => handle_add(file, service, user, generate),
+        } => handle_add(&mut clipboard, file, service, user, generate),
         Service::Remove { service, user, all } => remove_password(service, user, all),
         Service::Open => open_vault(),
         Service::Close => close_vault(),

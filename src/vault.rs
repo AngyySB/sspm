@@ -55,13 +55,13 @@ pub fn new_user() -> anyhow::Result<()> {
 }
 
 /// Handles the `add` command, dispatching to bulk/generated/manual add.
-pub fn handle_add(f: Option<PathBuf>, s: Option<String>, u: Option<String>, g: bool) -> anyhow::Result<()> {
+pub fn handle_add(c: &mut Clipboard, f: Option<PathBuf>, s: Option<String>, u: Option<String>, g: bool) -> anyhow::Result<()> {
     let enc = get_unlocked_key()?;
 
     if let Some(f) = f {
         bulk_add(f, enc)
     } else if g {
-        add_generate(s, u, enc)
+        add_generate(c, s, u, enc)
     } else {
         manual_add(s, u, enc)
     }
@@ -257,14 +257,27 @@ fn add_to_vault(
 }
 
 /// Adds a password entry using a randomly generated password.
-fn add_generate(s: Option<String>, u: Option<String>, e: String) -> anyhow::Result<()> {
+fn add_generate(clipboard: &mut Clipboard, s: Option<String>, u: Option<String>, e: String) -> anyhow::Result<()> {
     let service_name = s.unwrap_or_default();
     let user_name = u.unwrap_or_default();
 
     let password = gen_plain_password();
 
-    let (c, n) = encrypt(&decode_base64(&e), password)?;
-    add_to_vault(encode_base64(n), service_name, user_name, encode_base64(c))
+    let (c, n) = encrypt(&decode_base64(&e), password.clone())?;
+    add_to_vault(encode_base64(n), service_name, user_name, encode_base64(c))?;
+
+    let copy = Confirm::new()
+        .with_prompt("Copy generated password to clipboard?")
+        .default(true)
+        .interact()?;
+
+    if copy {
+        clipboard.set_text(password)?;
+        println!("Password copied to clipboard");
+        std::thread::sleep(std::time::Duration::from_millis(250));
+    }
+
+    Ok(())
 }
 
 /// Generates a random plaintext password.
