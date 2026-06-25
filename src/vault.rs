@@ -436,6 +436,8 @@ pub fn purge_all() -> anyhow::Result<()> {
         .interact()?;
 
     if password == "PURGE" {
+        let path = crate::storage::vault_path()?;
+        std::fs::remove_file(&path).context("failed to delete vault file")?;
         println!("{}", "everything has been deleted".bold().green());
     } else {
         println!("purge has been aborted");
