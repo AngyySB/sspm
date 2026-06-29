@@ -35,6 +35,8 @@ pub enum Service {
         user: Option<String>,
         #[arg(long)]
         generate: bool,
+        #[arg(short = 'c', long, conflicts_with = "generate")]
+        clipboard: bool,
     },
     Remove {
         #[arg(short, long)]
