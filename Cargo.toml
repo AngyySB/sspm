@@ -6,7 +6,7 @@ edition = "2024"
 [dependencies]
 aes-gcm = { version = "0.10.3", features = ["std"] }
 anyhow = "1.0.102"
-arboard = "3.6.1"
+arboard = { version = "3.6.1", features = ["wayland-data-control"] }
 argon2 = { version = "0.5.3", features = ["std"] }
 base64 = "0.22.1"
 clap = { version = "4.6.1", features = ["derive"] }
