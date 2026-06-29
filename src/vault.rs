@@ -54,7 +54,7 @@ pub fn handle_add(
     } else if generate {
         add_generate(clipboard, s, u, enc)
     } else if from_clipboard {
-        clipboard_add(clipboard, s, u, enc)
+        clipboard_add(s, u, enc)
     } else {
         manual_add(s, u, enc)
     }
@@ -191,8 +191,11 @@ fn add_generate(clipboard: &mut Clipboard, s: Option<String>, u: Option<String>,
 }
 
 /// Adds a password entry using whatever text is currently in the clipboard.
-fn clipboard_add(clipboard: &mut Clipboard, s: Option<String>, u: Option<String>, e: String) -> anyhow::Result<()> {
-    let password = clipboard.get_text().context("Failed to read from clipboard")?;
+fn clipboard_add(s: Option<String>, u: Option<String>, e: String) -> anyhow::Result<()> {
+    let password = Clipboard::new()
+        .context("Failed to initialize clipboard")?
+        .get_text()
+        .context("Failed to read from clipboard")?;
     let service_name = s.unwrap_or_default();
     let user_name = u.unwrap_or_default();
     println!("adding entry: service: {} | user: {} (password from clipboard)", service_name, user_name);
